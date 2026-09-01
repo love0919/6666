@@ -19,9 +19,7 @@
             box-sizing: border-box; 
             margin: 0; 
             padding: 0; 
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -57,6 +55,7 @@
             border-radius: 20px;
             font-size: 14px;
             font-weight: bold;
+            cursor: pointer;
         }
 
         .control-panel {
@@ -86,6 +85,7 @@
             border-radius: 6px;
             font-size: 24px;
             font-weight: bold;
+            cursor: pointer;
         }
 
         .step-val {
@@ -119,6 +119,7 @@
             font-size: 16px;
             font-weight: 900;
             white-space: nowrap;
+            cursor: pointer;
         }
 
         .timer-card {
@@ -172,6 +173,7 @@
             border-radius: 8px;
             font-size: 15px;
             font-weight: bold;
+            cursor: pointer;
         }
 
         .batch-card {
@@ -195,18 +197,18 @@
     <div class="container">
         <div class="nav">
             <span class="title" id="page-title">Uber Eats 計時器</span>
-            <button class="tab-btn" onclick="toggleView()">歷史紀錄</button>
+            <button class="tab-btn" type="button" onclick="toggleView()">歷史紀錄</button>
         </div>
 
         <div id="timer-view">
             <div class="control-panel">
                 <div class="stepper">
-                    <button class="step-btn" onclick="adjustCount(-1)">-</button>
+                    <button class="step-btn" type="button" onclick="adjustCount(-1)">-</button>
                     <span class="step-val" id="order-count">3</span>
-                    <button class="step-btn" onclick="adjustCount(1)">+</button>
+                    <button class="step-btn" type="button" onclick="adjustCount(1)">+</button>
                 </div>
                 <input type="number" id="platform-pay" placeholder="$金額" inputmode="decimal">
-                <button class="start-btn" onclick="startTimer()">開始</button>
+                <button class="start-btn" type="button" onclick="startTimer()">開始</button>
             </div>
 
             <div id="active-timers-list" style="margin-top: 10px;">
@@ -220,9 +222,9 @@
     </div>
 
     <script>
-        let count = 3;
-        let activeBatches = [];
-        let historyBatches = JSON.parse(localStorage.getItem('order_history') || '[]');
+        var count = 3;
+        var activeBatches = [];
+        var historyBatches = JSON.parse(localStorage.getItem('order_history') || '[]');
 
         function adjustCount(delta) {
             count = Math.max(1, Math.min(5, count + delta));
@@ -230,25 +232,32 @@
         }
 
         function fmt(d) {
-            const date = new Date(d);
-            return `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
+            var date = new Date(d);
+            var h = date.getHours();
+            var m = date.getMinutes();
+            return (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m);
         }
 
         function startTimer() {
-            const payInput = document.getElementById('platform-pay');
-            const pay = parseFloat(payInput.value) || 0;
-            const now = new Date();
+            var payInput = document.getElementById('platform-pay');
+            var pay = parseFloat(payInput.value) || 0;
+            var now = new Date();
             
-            activeBatches.push({
-                id: Date.now(),
-                startTime: now,
-                platformPay: pay,
-                orders: Array.from({ length: count }, (_, i) => ({
+            var orders = [];
+            for (var i = 0; i < count; i++) {
+                orders.push({
                     id: i + 1,
                     startTime: now,
                     endTime: null,
                     durationMin: 0
-                }))
+                });
+            }
+
+            activeBatches.push({
+                id: Date.now(),
+                startTime: now,
+                platformPay: pay,
+                orders: orders
             });
 
             payInput.value = '';
@@ -256,63 +265,65 @@
         }
 
         function stopOrder(bId, idx) {
-            const batch = activeBatches.find(b => b.id === bId);
+            var batch = null;
+            for (var i = 0; i < activeBatches.length; i++) {
+                if (activeBatches[i].id === bId) {
+                    batch = activeBatches[i];
+                    break;
+                }
+            }
             if (!batch) return;
             
-            const o = batch.orders[idx];
+            var o = batch.orders[idx];
             o.endTime = new Date();
             o.durationMin = Math.max(1, Math.round((o.endTime - o.startTime) / 60000));
 
-            if (batch.orders.every(item => item.endTime !== null)) {
-                let totalEst = 0;
-                batch.orders.forEach(item => {
-                    item.estPay = parseFloat((item.durationMin * 4.086).toFixed(1));
-                    totalEst += item.estPay;
-                });
+            var allDone = true;
+            for (var j = 0; j < batch.orders.length; j++) {
+                if (batch.orders[j].endTime === null) {
+                    allDone = false;
+                    break;
+                }
+            }
+
+            if (allDone) {
+                var totalEst = 0;
+                for (var k = 0; k < batch.orders.length; k++) {
+                    batch.orders[k].estPay = parseFloat((batch.orders[k].durationMin * 4.086).toFixed(1));
+                    totalEst += batch.orders[k].estPay;
+                }
                 
                 historyBatches.unshift({
-                    ...batch,
+                    id: batch.id,
+                    startTime: batch.startTime,
+                    platformPay: batch.platformPay,
+                    orders: batch.orders,
                     totalEstPay: totalEst.toFixed(1),
                     diff: (batch.platformPay - totalEst).toFixed(1)
                 });
                 
                 localStorage.setItem('order_history', JSON.stringify(historyBatches));
-                activeBatches = activeBatches.filter(b => b.id !== bId);
+                
+                var newActive = [];
+                for (var m = 0; m < activeBatches.length; m++) {
+                    if (activeBatches[m].id !== bId) {
+                        newActive.push(activeBatches[m]);
+                    }
+                }
+                activeBatches = newActive;
             }
             renderActive();
         }
 
         function renderActive() {
-            const activeList = document.getElementById('active-timers-list');
-            if (!activeBatches.length) {
-                activeList.innerHTML = `<div style="text-align:center;color:var(--dim);padding:30px 0;font-size:16px;">無進行中訂單</div>`;
+            var activeList = document.getElementById('active-timers-list');
+            if (activeBatches.length === 0) {
+                activeList.innerHTML = '<div style="text-align:center;color:var(--dim);padding:30px 0;font-size:16px;">無進行中訂單</div>';
                 return;
             }
 
-            activeList.innerHTML = activeBatches.map(b => `
-                <div class="timer-card">
-                    <div class="batch-info">
-                        <span>開單 ${fmt(b.startTime)}</span>
-                        <span>平台 $${b.platformPay}</span>
-                    </div>
-                    ${b.orders.map((o, idx) => `
-                        <div class="timer-row">
-                            <div>
-                                <span class="tag-ue">UE</span>
-                                <span class="time-text">${fmt(o.startTime)}</span>
-                            </div>
-                            <div id="time-${b.id}-${idx}" class="time-text" style="color:var(--ue-green);">
-                                ${o.endTime ? ${o.durationMin}分 : '0分 0秒'}
-                            </div>
-                            ${!o.endTime ? 
-                                <button class="stop-btn" onclick="stopOrder(${b.id}, ${idx})">送達</button> : 
-                                '<span style="color:var(--ue-green);font-size:14px;font-weight:bold;">✓ 完成</span>'
-                            }
-                        </div>
-                    `).join('')}
-                </div>
-            `).join('');
-        }
-
-        function toggleView() {
-            const timerView = document
+            var html = '';
+            for (var i = 0; i < activeBatches.length; i++) {
+                var b = activeBatches[i];
+                html += '<div class="timer-card">';
+                html += '<div class="batch-info"><span>開單 ' + fmt(b.startTime) +
