@@ -2,34 +2,40 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>機車外送計時器</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Uber Eats 計時器</title>
     <style>
         :root {
-            --bg: #0d0f12;
-            --card: #181b20;
-            --orange: #ff7600;
-            --green: #00e676;
-            --red: #ff334b;
-            --text: #ffffff;
-            --dim: #8a92a0;
+            --bg: #000000;
+            --card: #161616;
+            --ue-green: #06C167;
+            --red: #FF2E00;
+            --text: #FFFFFF;
+            --dim: #A0A0A0;
+            --border: #2A2A2A;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            width: 100%;
+            min-height: 100dvh;
             background-color: var(--bg);
             color: var(--text);
-            display: flex;
-            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            padding: 12px;
         }
 
         .container {
-            width: 100%;
             max-width: 480px;
-            min-height: 100vh;
-            padding: 12px;
+            margin: 0 auto;
             display: flex;
             flex-direction: column;
             gap: 12px;
@@ -39,94 +45,99 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 4px 0;
         }
 
-        .title { font-size: 22px; font-weight: 900; color: var(--orange); }
+        .title { font-size: 20px; font-weight: 900; color: var(--ue-green); }
 
         .tab-btn {
             background: var(--card);
-            border: 1px solid #2a2e37;
+            border: 1px solid var(--border);
             color: var(--text);
             padding: 8px 16px;
             border-radius: 20px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
         }
 
         .control-panel {
             background: var(--card);
-            border-radius: 16px;
-            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 8px;
             display: flex;
-            gap: 8px;
+            gap: 6px;
             align-items: center;
         }
 
         .stepper {
             display: flex;
             align-items: center;
-            background: #22262f;
-            border-radius: 12px;
-            padding: 4px;
+            background: #222;
+            border-radius: 8px;
+            padding: 2px;
         }
 
         .step-btn {
-            width: 48px;
-            height: 48px;
-            background: var(--orange);
+            width: 44px;
+            height: 44px;
+            background: var(--ue-green);
             color: #000;
             border: none;
-            border-radius: 10px;
-            font-size: 28px;
+            border-radius: 6px;
+            font-size: 24px;
             font-weight: bold;
         }
 
         .step-val {
-            width: 36px;
+            width: 32px;
             text-align: center;
-            font-size: 22px;
+            font-size: 18px;
             font-weight: bold;
         }
 
         input[type="number"] {
             flex: 1;
-            height: 56px;
-            background: #22262f;
-            border: none;
-            border-radius: 12px;
+            min-width: 0;
+            height: 44px;
+            background: #222;
+            border: 1px solid var(--border);
+            border-radius: 8px;
             color: var(--text);
-            font-size: 20px;
+            font-size: 16px;
             font-weight: bold;
             text-align: center;
             outline: none;
         }
 
         .start-btn {
-            height: 56px;
-            padding: 0 20px;
-            background: var(--orange);
+            height: 44px;
+            padding: 0 16px;
+            background: var(--ue-green);
             color: #000;
             border: none;
-            border-radius: 12px;
-            font-size: 20px;
+            border-radius: 8px;
+            font-size: 16px;
             font-weight: 900;
+            white-space: nowrap;
         }
 
         .timer-card {
             background: var(--card);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            border-left: 6px solid var(--orange);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 5px solid var(--ue-green);
+            border-top: 1px solid var(--border);
+            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
         }
 
         .batch-info {
             display: flex;
             justify-content: space-between;
-            font-size: 15px;
+            font-size: 13px;
             color: var(--dim);
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             font-weight: bold;
         }
 
@@ -134,72 +145,73 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #282c35;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
         }
 
         .timer-row:last-child { border-bottom: none; }
 
         .tag-ue {
-            background: var(--green);
+            background: var(--ue-green);
             color: #000;
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-size: 14px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
             font-weight: 900;
             margin-right: 6px;
         }
 
-        .time-text { font-size: 18px; font-weight: bold; }
+        .time-text { font-size: 15px; font-weight: bold; }
 
         .stop-btn {
-            height: 48px;
-            padding: 0 16px;
+            height: 40px;
+            padding: 0 14px;
             background: var(--red);
             color: #fff;
             border: none;
-            border-radius: 10px;
-            font-size: 16px;
+            border-radius: 8px;
+            font-size: 15px;
             font-weight: bold;
         }
 
-        .done-text { color: var(--green); font-size: 16px; font-weight: bold; }
-
         .batch-card {
             background: var(--card);
-            border-radius: 16px;
-            padding: 14px;
-            margin-bottom: 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
         }
 
         .batch-head {
             display: flex;
             justify-content: space-between;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="nav">
-            <span class="title" id="page-title">機車計時器</span>
-            <button class="tab-btn" id="toggle-btn">歷史紀錄</button>
+            <span class="title" id="page-title">Uber Eats 計時器</span>
+            <button class="tab-btn" onclick="toggleView()">歷史紀錄</button>
         </div>
 
         <div id="timer-view">
             <div class="control-panel">
                 <div class="stepper">
-                    <button class="step-btn" id="btn-minus">-</button>
+                    <button class="step-btn" onclick="adjustCount(-1)">-</button>
                     <span class="step-val" id="order-count">3</span>
-                    <button class="step-btn" id="btn-plus">+</button>
+                    <button class="step-btn" onclick="adjustCount(1)">+</button>
                 </div>
-                <input type="number" id="platform-pay" placeholder="$平台金額" inputmode="decimal">
-                <button class="start-btn" id="btn-start">開始</button>
+                <input type="number" id="platform-pay" placeholder="$金額" inputmode="decimal">
+                <button class="start-btn" onclick="startTimer()">開始</button>
             </div>
 
-            <div id="active-timers-list" style="margin-top: 12px;"></div>
+            <div id="active-timers-list" style="margin-top: 10px;">
+                <div style="text-align:center;color:var(--dim);padding:30px 0;font-size:16px;">無進行中訂單</div>
+            </div>
         </div>
 
         <div id="history-view" style="display: none;">
@@ -208,91 +220,99 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            let count = 3;
-            let activeBatches = [];
-            let historyBatches = JSON.parse(localStorage.getItem('order_history') || '[]');
+        let count = 3;
+        let activeBatches = [];
+        let historyBatches = JSON.parse(localStorage.getItem('order_history') || '[]');
 
-            const countEl = document.getElementById('order-count');
+        function adjustCount(delta) {
+            count = Math.max(1, Math.min(5, count + delta));
+            document.getElementById('order-count').innerText = count;
+        }
+
+        function fmt(d) {
+            const date = new Date(d);
+            return `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
+        }
+
+        function startTimer() {
             const payInput = document.getElementById('platform-pay');
-            const activeList = document.getElementById('active-timers-list');
-            const timerView = document.getElementById('timer-view');
-            const historyView = document.getElementById('history-view');
-            const toggleBtn = document.getElementById('toggle-btn');
-            const pageTitle = document.getElementById('page-title');
-
-            document.getElementById('btn-minus').onclick = () => { if(count > 1) countEl.innerText = --count; };
-            document.getElementById('btn-plus').onclick = () => { if(count < 5) countEl.innerText = ++count; };
-
-            document.getElementById('btn-start').onclick = () => {
-                const pay = parseFloat(payInput.value) || 0;
-                const now = new Date();
-                activeBatches.push({
-                    id: Date.now(),
+            const pay = parseFloat(payInput.value) || 0;
+            const now = new Date();
+            
+            activeBatches.push({
+                id: Date.now(),
+                startTime: now,
+                platformPay: pay,
+                orders: Array.from({ length: count }, (_, i) => ({
+                    id: i + 1,
                     startTime: now,
-                    platformPay: pay,
-                    orders: Array.from({ length: count }, (_, i) => ({
-                        id: i + 1, startTime: now, endTime: null, durationMin: 0
-                    }))
+                    endTime: null,
+                    durationMin: 0
+                }))
+            });
+
+            payInput.value = '';
+            renderActive();
+        }
+
+        function stopOrder(bId, idx) {
+            const batch = activeBatches.find(b => b.id === bId);
+            if (!batch) return;
+            
+            const o = batch.orders[idx];
+            o.endTime = new Date();
+            o.durationMin = Math.max(1, Math.round((o.endTime - o.startTime) / 60000));
+
+            if (batch.orders.every(item => item.endTime !== null)) {
+                let totalEst = 0;
+                batch.orders.forEach(item => {
+                    item.estPay = parseFloat((item.durationMin * 4.086).toFixed(1));
+                    totalEst += item.estPay;
                 });
-                payInput.value = '';
-                renderActive();
-            };
-
-            toggleBtn.onclick = () => {
-                const isTimer = timerView.style.display !== 'none';
-                timerView.style.display = isTimer ? 'none' : 'block';
-                historyView.style.display = isTimer ? 'block' : 'none';
-                pageTitle.innerText = isTimer ? '歷史對照' : '機車計時器';
-                toggleBtn.innerText = isTimer ? '返回計時' : '歷史紀錄';
-                if (isTimer) renderHistory();
-            };
-
-            function fmt(d) { return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
-
-            function renderActive() {
-                if (!activeBatches.length) {
-                    activeList.innerHTML = `<div style="text-align:center;color:var(--dim);padding:40px 0;font-size:18px;">無進行中訂單</div>`;
-                    return;
-                }
-
-                activeList.innerHTML = activeBatches.map(b => `
-                    <div class="timer-card">
-                        <div class="batch-info">
-                            <span>開單 ${fmt(b.startTime)}</span>
-                            <span>平台 $${b.platformPay}</span>
-                        </div>
-                        ${b.orders.map((o, idx) => `
-                            <div class="timer-row">
-                                <div>
-                                    <span class="tag-ue">UE</span>
-                                    <span class="time-text">${fmt(o.startTime)}</span>
-                                </div>
-                                <div id="time-${b.id}-${idx}" class="time-text" style="color:var(--orange);">
-                                    ${o.endTime ? ${o.durationMin}分 : '0分 0秒'}
-                                </div>
-                                ${!o.endTime ? 
-                                    <button class="stop-btn" data-b="${b.id}" data-i="${idx}">送達</button> : 
-                                    '<span class="done-text">✓ 完成</span>'
-                                }
-                            </div>
-                        `).join('')}
-                    </div>
-                `).join('');
-
-                document.querySelectorAll('.stop-btn').forEach(btn => {
-                    btn.onclick = (e) => stopOrder(parseInt(e.target.dataset.b), parseInt(e.target.dataset.i));
+                
+                historyBatches.unshift({
+                    ...batch,
+                    totalEstPay: totalEst.toFixed(1),
+                    diff: (batch.platformPay - totalEst).toFixed(1)
                 });
+                
+                localStorage.setItem('order_history', JSON.stringify(historyBatches));
+                activeBatches = activeBatches.filter(b => b.id !== bId);
+            }
+            renderActive();
+        }
+
+        function renderActive() {
+            const activeList = document.getElementById('active-timers-list');
+            if (!activeBatches.length) {
+                activeList.innerHTML = `<div style="text-align:center;color:var(--dim);padding:30px 0;font-size:16px;">無進行中訂單</div>`;
+                return;
             }
 
-            function stopOrder(bId, idx) {
-                const batch = activeBatches.find(b => b.id === bId);
-                if (!batch) return;
-                const o = batch.orders[idx];
-                o.endTime = new Date();
-                o.durationMin = Math.max(1, Math.round((o.endTime - o.startTime) / 60000));
+            activeList.innerHTML = activeBatches.map(b => `
+                <div class="timer-card">
+                    <div class="batch-info">
+                        <span>開單 ${fmt(b.startTime)}</span>
+                        <span>平台 $${b.platformPay}</span>
+                    </div>
+                    ${b.orders.map((o, idx) => `
+                        <div class="timer-row">
+                            <div>
+                                <span class="tag-ue">UE</span>
+                                <span class="time-text">${fmt(o.startTime)}</span>
+                            </div>
+                            <div id="time-${b.id}-${idx}" class="time-text" style="color:var(--ue-green);">
+                                ${o.endTime ? ${o.durationMin}分 : '0分 0秒'}
+                            </div>
+                            ${!o.endTime ? 
+                                <button class="stop-btn" onclick="stopOrder(${b.id}, ${idx})">送達</button> : 
+                                '<span style="color:var(--ue-green);font-size:14px;font-weight:bold;">✓ 完成</span>'
+                            }
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+        }
 
-                if (batch.orders.every(item => item.endTime)) {
-                    let totalEst = 0;
-                    batch.orders.forEach(item => {
-                        it
+        function toggleView() {
+            const timerView = document
