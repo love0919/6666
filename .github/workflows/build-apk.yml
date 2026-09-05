@@ -46,14 +46,13 @@ jobs:
       - name: Fix Java/Kotlin JVM target
         run: |
           APP_GRADLE="$PROJECT_DIR/app/build.gradle.kts"
-          cat >> "$APP_GRADLE" <<'EOF'
-          android {
-              compileOptions {
-                  sourceCompatibility = JavaVersion.VERSION_17
-                  targetCompatibility = JavaVersion.VERSION_17
-              }
-          }
-          EOF
+          printf '\nandroid {\n    compileOptions {\n        sourceCompatibility = JavaVersion.VERSION_17\n        targetCompatibility = JavaVersion.VERSION_17\n    }\n}\n' >> "$APP_GRADLE"
+
+      - name: Fix Android system bars
+        run: |
+          MAIN_KT="$PROJECT_DIR/app/src/main/java/com/deliverypro/app/MainActivity.kt"
+          sed -i '/super.onCreate(savedInstanceState)/a\        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, true)' "$MAIN_KT"
+          sed -i '/setContentView(webView)/a\        webView.setOnApplyWindowInsetsListener { view, insets ->\n            view.setPadding(insets.systemWindowInsetLeft, insets.systemWindowInsetTop, insets.systemWindowInsetRight, insets.systemWindowInsetBottom)\n            insets\n        }' "$MAIN_KT"
 
       - name: Build APK
         run: |
