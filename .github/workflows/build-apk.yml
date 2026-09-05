@@ -43,6 +43,18 @@ jobs:
           PROJECT_DIR=$(find android_project -mindepth 1 -maxdepth 1 -type d | head -n 1)
           echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
 
+      - name: Fix Java/Kotlin JVM target
+        run: |
+          APP_GRADLE="$PROJECT_DIR/app/build.gradle.kts"
+          cat >> "$APP_GRADLE" <<'EOF'
+          android {
+              compileOptions {
+                  sourceCompatibility = JavaVersion.VERSION_17
+                  targetCompatibility = JavaVersion.VERSION_17
+              }
+          }
+          EOF
+
       - name: Build APK
         run: |
           cd "$PROJECT_DIR"
