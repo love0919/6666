@@ -48,11 +48,10 @@ jobs:
           APP_GRADLE="$PROJECT_DIR/app/build.gradle.kts"
           printf '\nandroid {\n    compileOptions {\n        sourceCompatibility = JavaVersion.VERSION_17\n        targetCompatibility = JavaVersion.VERSION_17\n    }\n}\n' >> "$APP_GRADLE"
 
-      - name: Fix Android system bars
+      - name: Fix Android target SDK
         run: |
-          MAIN_KT="$PROJECT_DIR/app/src/main/java/com/deliverypro/app/MainActivity.kt"
-          sed -i '/super.onCreate(savedInstanceState)/a\        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, true)' "$MAIN_KT"
-          sed -i '/setContentView(webView)/a\        webView.setOnApplyWindowInsetsListener { view, insets ->\n            view.setPadding(insets.systemWindowInsetLeft, insets.systemWindowInsetTop, insets.systemWindowInsetRight, insets.systemWindowInsetBottom)\n            insets\n        }' "$MAIN_KT"
+          APP_GRADLE="$PROJECT_DIR/app/build.gradle.kts"
+          sed -i 's/targetSdk = 35/targetSdk = 34/' "$APP_GRADLE"
 
       - name: Build APK
         run: |
